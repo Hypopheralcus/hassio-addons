@@ -1,15 +1,33 @@
-ARG BUILD_FROM
-FROM $BUILD_FROM
-ARG BUILD_FROM
-COPY config.json /
-RUN apk --no-cache add jq
-RUN NOAH_MQTT_VERSION=$(jq --raw-output '.version // empty' config.json) && case "$BUILD_FROM" in \
-*"aarch64-base"*) ARCH="arm64";; \
-*"armhf-base"*) ARCH="armv6";; \
-*"amd64-base"*) ARCH="amd64";; \
-esac \
-&& curl -L -o /noah-mqtt.tar.gz https://github.com/mtrossbach/noah-mqtt/releases/download/v${NOAH_MQTT_VERSION}/noah-mqtt_${NOAH_MQTT_VERSION}_linux_${ARCH}.tar.gz && tar -xf /noah-mqtt.tar.gz && rm /noah-mqtt.tar.gz
+# Use explicit base image – required since Supervisor 2026.04
+FROM ghcr.io/home-assistant/base:2026.08
 
-COPY rootfs/docker-entrypoint.sh /
-RUN chmod a+x /noah-mqtt && chmod a+x /docker-entrypoint.sh
-ENTRYPOINT [ "/docker-entrypoint.sh"]
+# Build arguments (optional, can be overridden by CI)
+ARG BUILD_VERSION="dev"
+ARG BUILD_ARCH="aarch64"
+
+# Install runtime dependencies (adjust to what your add-on actually needs)
+RUN apk add --no-cache \
+    python3 \
+    py3-pip \
+    jq \
+    bashio
+
+# Copy add-on files into the image
+COPY run.sh /run.sh
+COPY config.yaml /data/options.json  # fallback, actual options come from Supervisor
+COPY noah_mqtt/ /app/
+
+RUN chmod a+x /run.sh
+
+# Labels required for apps (adjust values to your add-on)
+LABEL \
+  io.hass.version="${BUILD_VERSION}" \
+  io.hass.arch="${BUILD_ARCH}" \
+  io.hass.type="app" \
+  io.hass.name="Noah-MQTT" \
+  io.hass.description="Integrating Growatt Noah 2000 home batteries with Home Assistant via MQTT" \
+  io.hass.url="https://github.com/Hypopheralcus/hassio-addons"
+
+WORKDIR /app
+
+CMD ["/run.sh"]
