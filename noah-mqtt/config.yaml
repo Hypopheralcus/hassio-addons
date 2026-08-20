@@ -1,5 +1,5 @@
 name: "Noah-MQTT"
-version: "0.0.30"
+version: "0.0.31"
 slug: noah-mqtt
 description: >-
   Integrating Growatt Noah 2000 home batteries with Home Assistant via MQTT,
