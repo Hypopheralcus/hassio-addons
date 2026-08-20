@@ -33,8 +33,8 @@ RUN ARCH=$(cat /arch.txt | cut -d= -f2) && \
     tar -xf /noah-mqtt.tar.gz -C / && \
     rm /noah-mqtt.tar.gz
 
-# Copy docker-entrypoint.sh (muss im Add-on-Ordner liegen)
-COPY docker-entrypoint.sh /docker-entrypoint.sh
+# Copy docker-entrypoint.sh aus rootfs/
+COPY rootfs/docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod a+x /noah-mqtt && chmod a+x /docker-entrypoint.sh
 
 LABEL \
