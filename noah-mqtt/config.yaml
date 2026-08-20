@@ -1,0 +1,48 @@
+name: "Noah-MQTT"
+version: "0.0.30"
+slug: noah-mqtt
+description: >-
+  Integrating Growatt Noah 2000 home batteries with Home Assistant via MQTT,
+  enabling real-time monitoring and control of your energy storage system.
+arch:
+  - aarch64
+  - amd64
+url: "https://github.com/Hypopheralcus/hassio-addons"
+image: "ghcr.io/hypopheralcus/noah-mqtt"
+startup: application
+boot: auto
+init: true
+
+# MQTT broker is required
+services:
+  - mqtt:need
+
+# Options shown in the UI
+options:
+  mqtt_host: "core-mosquitto"
+  mqtt_port: 1883
+  mqtt_user: ""
+  mqtt_password: ""
+  mqtt_topic_prefix: "noah"
+  poll_interval: 30
+
+schema:
+  mqtt_host: str
+  mqtt_port: port
+  mqtt_user: str?
+  mqtt_password: password?
+  mqtt_topic_prefix: str
+  poll_interval: int(10,300)
+
+# Mounts / mapping
+map:
+  - type: addon_config
+    read_only: false
+
+# If you need Supervisor API (e.g. to read MQTT service data)
+hassio_api: true
+
+# Optional: ingress, watchdog, etc.
+# ingress: true
+# ingress_port: 8099
+# watchdog: "tcp://[HOST]:1883"
