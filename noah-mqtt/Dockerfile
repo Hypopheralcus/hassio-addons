@@ -33,9 +33,9 @@ RUN ARCH=$(cat /arch.txt | cut -d= -f2) && \
     tar -xf /noah-mqtt.tar.gz -C / && \
     rm /noah-mqtt.tar.gz
 
-# Copy run.sh (muss im Add-on-Ordner liegen)
-COPY run.sh /run.sh
-RUN chmod a+x /run.sh
+# Copy docker-entrypoint.sh (muss im Add-on-Ordner liegen)
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod a+x /noah-mqtt && chmod a+x /docker-entrypoint.sh
 
 LABEL \
   io.hass.version="${BUILD_VERSION}" \
@@ -47,4 +47,4 @@ LABEL \
 
 WORKDIR /
 
-CMD ["/run.sh"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
