@@ -1,12 +1,13 @@
 name: "Noah-MQTT"
-version: "0.0.35"
-slug: noah-mqtt
+version: "0.0.36"
+slug: "noah_mqtt" # In HA-Slugs sind Unterstriche sicherer als Bindestriche
 description: >-
   Integrating Growatt Noah 2000 home batteries with Home Assistant via MQTT,
   enabling real-time monitoring and control of your energy storage system.
 arch:
   - aarch64
   - amd64
+  - armv7 # Aus der alten Config übernommen, falls du es auf einem Pi 3/4 (32-bit) laufen hast
 url: "https://github.com/Hypopheralcus/hassio-addons"
 #image: "ghcr.io/hypopheralcus/noah-mqtt"
 startup: application
@@ -17,22 +18,31 @@ init: true
 services:
   - mqtt:need
 
-# Options shown in the UI
+# Options shown in the UI (Standardwerte)
 options:
+  log_level: "INFO"
+  growatt_api_mode: "web+app"
+  growatt_username: ""
+  growatt_password: ""
+  poll_interval: 30
   mqtt_host: "core-mosquitto"
   mqtt_port: 1883
   mqtt_user: ""
   mqtt_password: ""
   mqtt_topic_prefix: "noah"
-  poll_interval: 30
 
+# Typendefinition für die Eingabefelder im Home Assistant UI
 schema:
+  log_level: "list(DEBUG|INFO|WARN|ERROR)"
+  growatt_api_mode: "list(web+app|web|app)"
+  growatt_username: str
+  growatt_password: password
+  poll_interval: "int(10,300)"
   mqtt_host: str
   mqtt_port: port
   mqtt_user: str?
   mqtt_password: password?
   mqtt_topic_prefix: str
-  poll_interval: int(10,300)
 
 # Mounts / mapping
 map:
